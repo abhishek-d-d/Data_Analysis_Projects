@@ -1,0 +1,284 @@
+fSales Insights Project
+
+ATLIQ Hardware- Sales MANAGER
+
+1	->	Peoblem Statement
+
+
+
+
+	Use AIMS grid -> define a Problem
+	
+	Market is growing dynnamically and sales manager is facing issue in tracking sales insights
+	Regional Managers sugar coat the facts and don't give him a complete pictures they send him the excel files'
+	
+Goal
+	Find weak areas
+	
+
+
+2	->	Project Planning Using AIMS grid and DATA Discovery
+
+
+
+
+
+AIMS grid -> Project management Tools
+It has four Componants
+https://youtu.be/6118I9HViuQ?si=_imrNYwquFLTcTir
+
+
+1 -> 	PURPOSE
+		Unlock sales insights that were not visible before
+for sales team for deccision support and automate them to reduce manual time spent in data gathering
+
+2 -> 	STAKEHOLDERS
+		* Sales Director * Marketing Team * Customer Service Team * Data & Analytics Team * IT
+
+3 -> 	END RESULT
+		An automated dashboard providing quick and latest insights in order to support 
+data driven Decision Making
+
+4 ->	SUCCESS CRITERIA
+		*	Dashboard uncoveing sales order insights with latest data available
+		*	Sales team able to make better Decision & Prove 10 % cost saving of total spent
+		*	Sales Analyst stops data gathering manually in order to save 20% of their business time & reinvest it in valuve added activity
+
+
+
+MYSQL   ->   OLTP : Online transaction processing system
+ETL  	-> Extract Transform Load
+
+
+sometime you 
+- take data from DBMS (MySQL)
+- Perfom ETL to make it in the form to perform data analysis
+- create a DATA WAREHOUSE and store the ETL transformed data
+
+
+You can not perform ANALYTICAL queries directing in on the MYSQL database
+if it colides or crashes or get slow 
+-> The main stream business will be affected
+So to avoid that will perform analysis on Data Warehouse
+
+
+
+
+
+
+3	->	Data Analysis Using SQL
+
+### Data Analysis Using SQL
+
+1. Show all customer records
+
+    `SELECT * FROM customers;`
+
+1. Show total number of customers
+
+    `SELECT count(*) FROM customers;`
+
+1. Show transactions for Chennai market (market code for chennai is Mark001
+
+    `SELECT * FROM transactions where market_code='Mark001';`
+
+1. Show distrinct product codes that were sold in chennai
+
+    `SELECT distinct product_code FROM transactions where market_code='Mark001';`
+
+1. Show transactions where currency is US dollars
+
+    `SELECT * from transactions where currency="USD"`
+
+1. Show transactions in 2020 join by date table
+
+    `SELECT transactions.*, date.* FROM transactions INNER JOIN date ON transactions.order_date=date.date where date.year=2020;`
+
+1. Show total revenue in year 2020,
+
+    `SELECT SUM(transactions.sales_amount) FROM transactions INNER JOIN date ON transactions.order_date=date.date where date.year=2020 and transactions.currency="INR\r" or transactions.currency="USD\r";`
+	
+1. Show total revenue in year 2020, January Month,
+
+    `SELECT SUM(transactions.sales_amount) FROM transactions INNER JOIN date ON transactions.order_date=date.date where date.year=2020 and and date.month_name="January" and (transactions.currency="INR\r" or transactions.currency="USD\r");`
+
+1. Show total revenue in year 2020 in Chennai
+
+    `SELECT SUM(transactions.sales_amount) FROM transactions INNER JOIN date ON transactions.order_date=date.date where date.year=2020
+and transactions.market_code="Mark001";`
+
+
+
+
+This is what i did
+
+use sales;
+
+
+## 1. Show all customer records
+
+SELECT * FROM customers;
+
+
+##	2.	Show total number of customers
+
+SELECT count(*) 
+FROM customers;
+
+
+##	3.	Show transactions for Chennai market (market code for chennai is Mark001)
+select * 
+from transactions;
+
+select * 
+from markets;
+
+select *
+from transactions
+where market_code = "Mark001";
+
+
+##	4.	Show distrinct product codes that were sold in chennai
+
+select distinct(product_code) as Unique_products
+from transactions
+where market_code = "Mark001";
+
+
+##	5.	Show transactions where currency is US dollars
+
+select distinct(currency)
+from transactions;
+
+select * 
+from transactions
+where currency = "USD";
+
+
+##	6.	Show transactions in 2020 join by date table
+select * 
+from transactions
+INNER JOIN date
+ON transactions.order_date = date.date;
+
+select * 
+from transactions
+INNER JOIN date
+ON transactions.order_date = date.date
+where year = 2020;
+
+
+
+
+##	7.	total revenue in year 2020
+
+select sum(sales_amount)
+from transactions
+inner join date
+on transactions.order_date = date.date
+where year = 2020;
+
+
+##	Show total revenue in year 2020,  January Month
+
+select sum(sales_amount)
+from transactions
+inner join date
+on transactions.order_date = date.date
+where month_name = "January";
+
+
+##	Show total revenue in year 2020,  January & February Month
+
+select sum(sales_amount)
+from transactions
+inner join date
+on transactions.order_date = date.date
+where month_name in ("January", "February");
+
+##	Show total revenue in year 2020, in chennai
+
+select sum(sales_amount)
+from transactions
+inner join date
+on transactions.order_date = date.date
+where year = 2020 and market_code = "Mark001";
+
+
+
+
+
+Power Bi ANALYSIS
+
+
+
+STEP : DATA CLEANING and ETL
+
+
+
+Import the database in the PowerBI
+and after importing the data base
+
+1	DO data modeling
+		connect the tables which have some in comman
+		so we use those columns as a comman link to join the tables
+
+		in model view
+
+2 	transform
+		ATLIQ hw is only working in india rightnow so we don't want any outliers
+		so we we'll be removing the data from New York and Paris
+		By using Transform Data From the Tab
+
+		Clean the values from sales_amount which contains -1 and 0
+		as for products sold it can not contain the -1 and 0 as amount
+
+		For converting USD to INR
+		Create a new column named normalized currency
+		where all the amount will be converted into INR(Single Currency)
+
+
+
+		Add column and then conditional column
+                                               column name
+		= Table.AddColumn(#"Filtered Rows", "Normalized_sales_amount", each if [currency] = "USD" then [sales_amount]*75 else [sales_amount])
+
+
+		Two IND and INR
+		"USD#(cr)"
+
+		= Table.AddColumn(#"Filtered Rows", "Normalized_sales_amount", each if [currency] = "USD" or [currency] = Two IND and INR
+		"USD#(cr)" then [sales_amount]*75 else [sales_amount])
+
+
+STEP : DASHBOARD VISUALIZATIONS
+
+First we created a measure and based on that measure we created an entire dashboard
+using enter data
+
+STEP: FEEDBACK
+
+what are my top 2 products
+what are my bottom two product : issue special discount on those
+What are my weakest reagions : Compitition and all
+
+Ask different Questions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
